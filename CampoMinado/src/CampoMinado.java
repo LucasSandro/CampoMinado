@@ -1,7 +1,12 @@
 
 public class CampoMinado {
 	
-	public CampoMinado(int dificuldade) {
+	public CampoMinado() {
+		
+	}
+
+	public void iniciaPartida(int dificuldade) {
+		// TODO Auto-generated method stub
 		
 	}
 }
