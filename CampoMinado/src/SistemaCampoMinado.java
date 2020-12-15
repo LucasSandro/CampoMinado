@@ -17,37 +17,34 @@ public class SistemaCampoMinado {
 			opcao = MostraMenu();
 			
 			switch (opcao) {
-			case 1: IniciarJogo(); break;
+			case 1: iniciaJogo(); break;
 			
-			case 2: exibirHistórico(); break;
+			case 2: exibeHistorico(); break;
 			
-			case 3: limparHistórico(); break;
+			case 3: limpaHistorico(); break;
 			
-			case 4: créditos(); break;
+			case 4: creditos(); break;
 			
 			case 0: break;
 			
 			default: System.out.println("Informe uma opção existente!"); break;
 			}
-		} while (opcao != 0);		
+		} while (opcao != 0);
 	}
 
-	private void créditos() {
-		// TODO Auto-generated method stub
-		
+	private void creditos() {
+		campoMinado.mostraCredito();
 	}
 
-	private void limparHistórico() {
-		// TODO Auto-generated method stub
-		
+	private void limpaHistorico() {
+		campoMinado.limpaHistorico();
 	}
 
-	private void exibirHistórico() {
-		// TODO Auto-generated method stub
-		
+	private void exibeHistorico() {
+		campoMinado.exibeHistorico();
 	}
 
-	private void IniciarJogo() {
+	private void iniciaJogo() {
 		int dificuldade = 0;
 		boolean informouCorreto = false;
 		
