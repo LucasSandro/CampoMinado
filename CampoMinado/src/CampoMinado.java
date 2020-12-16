@@ -5,6 +5,7 @@ public class CampoMinado {
 	
 	private char listaBombas[][];
 	private char tela[][];
+	private boolean terminouJogo;
 	
 	public CampoMinado() {
 	}
@@ -32,45 +33,47 @@ public class CampoMinado {
 		
 		PopulaBombas(dificuldade);
 		PopulaTela();
-		
+		terminouJogo = false;
 		MostraCampo();
 	}
 
 	private void MostraCampo() {
-		for (int qtdLinha = 0; qtdLinha < 2; ++qtdLinha) {
-			System.out.print("    ");
-			for (int idx = 0; idx < tela[0].length; ++idx) {
-				if (qtdLinha == 0) {
-					System.out.print(idx + " ");
+		do {
+			for (int qtdLinha = 0; qtdLinha < 2; ++qtdLinha) {
+				System.out.print("    ");
+				for (int idx = 0; idx < tela[0].length; ++idx) {
+					if (qtdLinha == 0) {
+						System.out.print(idx + " ");
 					
-					if (idx < 9)
-						System.out.print(" ");
-				} else {
-					System.out.print("---");
+						if (idx < 9)
+							System.out.print(" ");
+						} else {
+							System.out.print("---");
+						}
 				}
-			}
 			
-			System.out.println();
-		}
+				System.out.println();
+			}
 		
-		for (int idxLinha = 0; idxLinha < tela.length; ++idxLinha) {
-			for (int idxColuna = 0; idxColuna < tela[idxLinha].length; ++idxColuna) {
-				if (idxColuna == 0) {
-					System.out.print(idxLinha);
+			for (int idxLinha = 0; idxLinha < tela.length; ++idxLinha) {
+				for (int idxColuna = 0; idxColuna < tela[idxLinha].length; ++idxColuna) {
+					if (idxColuna == 0) {
+						System.out.print(idxLinha);
 					
-					if (idxLinha < 10)
-						System.out.print(" ");
+						if (idxLinha < 10)
+							System.out.print(" ");
 					
-					System.out.print("| ");
+						System.out.print("| ");
+					}
+					
+					System.out.print(tela[idxLinha][idxColuna] + "  ");
 				}
-				System.out.print(tela[idxLinha][idxColuna] + "  ");
-			}
 			
-			System.out.println();
-		}
+				System.out.println();
+			}
 		
-		InformaCampo();
-		
+			InformaCampo();
+		} while (!terminouJogo);
 	}
 
 	private void InformaCampo() {
@@ -82,18 +85,27 @@ public class CampoMinado {
 		System.out.println("Digite a coluna: ");
 		int coluna = teclado.nextInt();
 		
-		switch (AbrirCampo(linha, coluna, 'U')) {
+		if (ValidaCampos(linha, coluna)) {
+			switch (AbrirCampo(linha, coluna, 'U')) {
 			
+			}
 		}
 	}
 	
+	private boolean ValidaCampos(int linha, int coluna) {
+		return true;
+	}
+
 	private char AbrirCampo(int linha, int coluna, char metodo) {
 		
-		if (metodo == 'U' && tela[linha][coluna] != '#') {
-			System.out.println("Campo já informado");
-			return 'E';
-		}
 		
+		
+		if (metodo == 'U' && tela[linha][coluna] == '*') {
+			terminouJogo = true;
+			//Chamar novamente para limpar o campo
+			return 'D';
+		}
+		terminouJogo = true;
 		return 'V';
 	}
 
