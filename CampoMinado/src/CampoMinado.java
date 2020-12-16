@@ -1,4 +1,5 @@
 import java.util.Random;
+import java.util.Scanner;
 
 public class CampoMinado {
 	
@@ -36,8 +37,64 @@ public class CampoMinado {
 	}
 
 	private void MostraCampo() {
+		for (int qtdLinha = 0; qtdLinha < 2; ++qtdLinha) {
+			System.out.print("    ");
+			for (int idx = 0; idx < tela[0].length; ++idx) {
+				if (qtdLinha == 0) {
+					System.out.print(idx + " ");
+					
+					if (idx < 9)
+						System.out.print(" ");
+				} else {
+					System.out.print("---");
+				}
+			}
+			
+			System.out.println();
+		}
 		
+		for (int idxLinha = 0; idxLinha < tela.length; ++idxLinha) {
+			for (int idxColuna = 0; idxColuna < tela[idxLinha].length; ++idxColuna) {
+				if (idxColuna == 0) {
+					System.out.print(idxLinha);
+					
+					if (idxLinha < 10)
+						System.out.print(" ");
+					
+					System.out.print("| ");
+				}
+				System.out.print(tela[idxLinha][idxColuna] + "  ");
+			}
+			
+			System.out.println();
+		}
 		
+		InformaCampo();
+		
+	}
+
+	private void InformaCampo() {
+		Scanner teclado = new Scanner(System.in);
+		
+		System.out.println("Digite a linha: ");
+		int linha = teclado.nextInt();
+		
+		System.out.println("Digite a coluna: ");
+		int coluna = teclado.nextInt();
+		
+		switch (AbrirCampo(linha, coluna, 'U')) {
+			
+		}
+	}
+	
+	private char AbrirCampo(int linha, int coluna, char metodo) {
+		
+		if (metodo == 'U' && tela[linha][coluna] != '#') {
+			System.out.println("Campo já informado");
+			return 'E';
+		}
+		
+		return 'V';
 	}
 
 	private void PopulaTela() {
@@ -45,7 +102,6 @@ public class CampoMinado {
 			for (int idxColuna = 0; idxColuna < tela[idxLinha].length; ++idxColuna)
 				tela[idxLinha][idxColuna] = '#';
 		}
-		
 	}
 
 	private void PopulaBombas(int dificuldade) {
