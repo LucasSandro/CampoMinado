@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class CampoMinado {
 	
 	private char listaBombas[][];
@@ -27,16 +29,68 @@ public class CampoMinado {
 			}
 		}
 		
+		PopulaBombas(dificuldade);
+		PopulaTela();
+		
+		MostraCampo();
+	}
+
+	private void MostraCampo() {
+		
+		
+	}
+
+	private void PopulaTela() {
+		for (int idxLinha = 0; idxLinha < tela.length; ++idxLinha) {
+			for (int idxColuna = 0; idxColuna < tela[idxLinha].length; ++idxColuna)
+				tela[idxLinha][idxColuna] = '#';
+		}
+		
+	}
+
+	private void PopulaBombas(int dificuldade) {
+		int qtdBombas = 0;
+		switch (dificuldade) {
+			case 1: {
+				qtdBombas = 10;
+				break;
+			}
+	
+			case 2: {
+				qtdBombas = 40;
+				break;
+			}
+	
+			case 3: {
+				qtdBombas = 99;
+				break;
+			}	
+		}
+		
+		int linha = 0;
+		int coluna = 0;
+		
+		Random random = new Random();
+		
+		for (int idx = 0; idx < qtdBombas; ++idx) {
+			linha = random.nextInt(listaBombas.length);
+			coluna = random.nextInt(listaBombas[0].length);
+			
+			if (listaBombas[linha][coluna] == '*') {
+				--idx;
+				continue;
+			}
+			
+			listaBombas[linha][coluna] = '*';
+		}
 	}
 
 	public void mostraCredito() {
-		// TODO Auto-generated method stub
-		
+		System.out.println("Desenvolvido por Lucas Sandro e Vinicius");
 	}
 
 	public void limpaHistorico() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void exibeHistorico() {
