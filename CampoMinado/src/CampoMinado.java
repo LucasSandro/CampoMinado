@@ -1,7 +1,13 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class CampoMinado {
 	
@@ -11,9 +17,14 @@ public class CampoMinado {
 	private int qtdBombas;
 	private int qtdCamposAbertos;
 	private ArrayList<int[]> vetorPosicoesParaVerificar;
+	private ArrayList<String> historicos;
+	private long inicioCronometro;
+	private String dificuldadeSelecionada;
 	
 	public CampoMinado() {
 		vetorPosicoesParaVerificar = new ArrayList();
+		historicos = new ArrayList();
+		qtdCamposAbertos = 0;
 	}
 
 	public void iniciaPartida(int dificuldade) {
@@ -21,22 +32,26 @@ public class CampoMinado {
 			case 1: {
 				listaBombas = new char[10][8];
 				tela = new char[10][8];
+				dificuldadeSelecionada = "Nível Fácil  "; 
 				break;
 			}
 			
 			case 2: {
 				listaBombas = new char[18][14];
 				tela = new char[18][14];
+				dificuldadeSelecionada = "Nível Médio ";
 				break;
 			}
 			
 			case 3: {
 				listaBombas = new char[24][20];
 				tela = new char[24][20];
+				dificuldadeSelecionada = "Nível Difícil";
 				break;
 			}
 		}
 		
+		inicioCronometro = System.currentTimeMillis();
 		PopulaBombas(dificuldade);
 		PopulaTela();
 		terminouJogo = false;
@@ -88,8 +103,8 @@ public class CampoMinado {
 
 	private void InformaCampo() {
 		Scanner teclado = new Scanner(System.in);
-		int linha = 0;
-		int coluna = 0;
+		int linha = -1;
+		int coluna = -1;
 		
 		try {
 			System.out.println("Digite a linha: ");
@@ -105,11 +120,15 @@ public class CampoMinado {
 			switch (AbrirCampo(linha, coluna, 'U')) {
 				case 'D':{
 					System.out.println("Você perdeu!");
+					historicos.add(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) 
+							+ " | " + dificuldadeSelecionada + " | " + "Duração " + CalculaTempoJogo() + " | " + "Perdeu");
 					break;
 				}
 			
 				case 'V': {
 					System.out.println("Você ganhou!");
+					historicos.add(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) 
+							+ " | " + dificuldadeSelecionada + " | " + "Duração " + CalculaTempoJogo() + " | " + "Ganhou");
 					break;
 				}
 			
@@ -130,30 +149,43 @@ public class CampoMinado {
 		
 		if (metodo == 'U' && listaBombas[linha][coluna] == '*') {
 			terminouJogo = true;
-			//Chamar novamente para limpar o campo
+			VerificaArredores(linha, coluna, 'D');
 			return 'D';
 		}
 
-		if (qtdCamposAbertos == (tela.length * tela[0].length - qtdBombas)) {
+		tela[linha][coluna] = VerificaArredores(linha, coluna, 'U');
+
+		
+		while (!vetorPosicoesParaVerificar.isEmpty()) {
+			linha = vetorPosicoesParaVerificar.get(0)[0];
+			coluna = vetorPosicoesParaVerificar.get(0)[1];
+			tela[linha][coluna] = VerificaArredores(linha, coluna, 'C');
+		}
+
+		if (ContaCamposNaoInformados() == qtdBombas) {
 			terminouJogo = true;
 			return 'V';
 		}
 		
-		tela[linha][coluna] = VerificaArredores(linha, coluna, 'U');
-		++qtdCamposAbertos;
-		
-		do {
-			linha = vetorPosicoesParaVerificar.get(0)[0];
-			coluna = vetorPosicoesParaVerificar.get(0)[1];
-			tela[linha][coluna] = VerificaArredores(linha, coluna, 'C');
-			++qtdCamposAbertos;
-		} while (!vetorPosicoesParaVerificar.isEmpty());
 		return ' ';
+	}
+	
+	private int ContaCamposNaoInformados()	{
+		int qtdCamposNaoInformados = 0;
+		
+		for (int idxLinha = 0; idxLinha < tela.length; idxLinha++) {
+			for (int idxColuna = 0; idxColuna < listaBombas[idxLinha].length; idxColuna++) {
+				if (tela[idxLinha][idxColuna] == '#')
+					++qtdCamposNaoInformados;
+			}
+		}
+		
+		return qtdCamposNaoInformados;
 	}
 
 	private char VerificaArredores(int linha, int coluna, char metodo) {
 		int qtdBombasEncontradas = 0;
-		
+		ArrayList<int[]> posicoesParaVerificar = new ArrayList();
 		if (linha != 0) {
 			int linhaVerificacao = linha - 1;
 			
@@ -168,9 +200,9 @@ public class CampoMinado {
 				if (listaBombas[linhaVerificacao][idx] == '*')
 					++qtdBombasEncontradas;
 				else if (tela[linhaVerificacao][idx] == '#'){
-					vetorPosicoesParaVerificar.add(new int[2]);
-					vetorPosicoesParaVerificar.get(vetorPosicoesParaVerificar.size() - 1)[0] = linhaVerificacao;
-					vetorPosicoesParaVerificar.get(vetorPosicoesParaVerificar.size() - 1)[1] = idx;
+					posicoesParaVerificar.add(new int[2]);
+					posicoesParaVerificar.get(posicoesParaVerificar.size() - 1)[0] = linhaVerificacao;
+					posicoesParaVerificar.get(posicoesParaVerificar.size() - 1)[1] = idx;
 				}
 			}
 			
@@ -193,9 +225,9 @@ public class CampoMinado {
 				if (listaBombas[linhaVerificacao][idx] == '*')
 					++qtdBombasEncontradas;
 				else if (tela[linhaVerificacao][idx] == '#') {
-					vetorPosicoesParaVerificar.add(new int[2]);
-					vetorPosicoesParaVerificar.get(vetorPosicoesParaVerificar.size() - 1)[0] = linhaVerificacao;
-					vetorPosicoesParaVerificar.get(vetorPosicoesParaVerificar.size() - 1)[1] = idx;
+					posicoesParaVerificar.add(new int[2]);
+					posicoesParaVerificar.get(posicoesParaVerificar.size() - 1)[0] = linhaVerificacao;
+					posicoesParaVerificar.get(posicoesParaVerificar.size() - 1)[1] = idx;
 				}
 			}
 			//Abaixo
@@ -206,22 +238,13 @@ public class CampoMinado {
 		if (coluna != 0) {
 			
 			int colunaVerificacao = coluna - 1;
-			
-			for (int idx = linha - 1; idx < linha + 2; ++idx)
-			{
-				if (idx == -1)
-					continue;
 				
-				if (idx == tela.length)
-					continue;
-				
-				if (listaBombas[idx][colunaVerificacao] == '*')
-					++qtdBombasEncontradas;
-				else if (tela[idx][colunaVerificacao] == '#') {
-					vetorPosicoesParaVerificar.add(new int[2]);
-					vetorPosicoesParaVerificar.get(vetorPosicoesParaVerificar.size() - 1)[0] = idx;
-					vetorPosicoesParaVerificar.get(vetorPosicoesParaVerificar.size() - 1)[1] = colunaVerificacao;
-				}
+			if (listaBombas[linha][colunaVerificacao] == '*')
+				++qtdBombasEncontradas;
+			else if (tela[linha][colunaVerificacao] == '#') {
+				posicoesParaVerificar.add(new int[2]);
+				posicoesParaVerificar.get(posicoesParaVerificar.size() - 1)[0] = linha;
+				posicoesParaVerificar.get(posicoesParaVerificar.size() - 1)[1] = colunaVerificacao;
 			}
 			
 			//Ao lado <-
@@ -234,21 +257,12 @@ public class CampoMinado {
 			
 			int colunaVerificacao = coluna + 1;
 			
-			for (int idx = linha - 1; idx < linha + 2; ++idx)
-			{
-				if (idx == -1)
-					continue;
-				
-				if (idx == tela.length)
-					continue;
-				
-				if (listaBombas[idx][colunaVerificacao] == '*')
-					++qtdBombasEncontradas;
-				else if (tela[idx][colunaVerificacao] == '#') {
-					vetorPosicoesParaVerificar.add(new int[2]);
-					vetorPosicoesParaVerificar.get(vetorPosicoesParaVerificar.size() - 1)[0] = idx;
-					vetorPosicoesParaVerificar.get(vetorPosicoesParaVerificar.size() - 1)[1] = colunaVerificacao;
-				}
+			if (listaBombas[linha][colunaVerificacao] == '*')
+				++qtdBombasEncontradas;
+			else if (tela[linha][colunaVerificacao] == '#') {
+				posicoesParaVerificar.add(new int[2]);
+				posicoesParaVerificar.get(posicoesParaVerificar.size() - 1)[0] = linha;
+				posicoesParaVerificar.get(posicoesParaVerificar.size() - 1)[1] = colunaVerificacao;
 			}
 			//Ao lado ->
 			//   0
@@ -256,6 +270,8 @@ public class CampoMinado {
 			//   0
 		}
 		
+		if (qtdBombasEncontradas == 0) 
+			vetorPosicoesParaVerificar.addAll(posicoesParaVerificar);
 		if (metodo == 'C')
 			vetorPosicoesParaVerificar.remove(0);
 		
@@ -305,16 +321,31 @@ public class CampoMinado {
 			listaBombas[linha][coluna] = '*';
 		}
 	}
+	
+	private String CalculaTempoJogo() 
+	{
+		long total = System.currentTimeMillis() - inicioCronometro;
+		String duracao = String.format("%02d:%02d:%02d", total/3600000, (total/60000) % 60, (total/1000) % 60);
+		
+		return duracao;
+	}
 
 	public void mostraCredito() {
 		System.out.println("Desenvolvido por Lucas Sandro e Vinicius");
 	}
 
 	public void limpaHistorico() {
-		// TODO Auto-generated method stub
+		historicos.clear();
 	}
-
+	
 	public void exibeHistorico() {
-		// TODO Auto-generated method stub
+		
+		if(historicos.size() > 0) {
+			for (String historico : historicos) {
+				System.out.println(historico);
+			}
+		}else {
+			System.out.println("Histórico vazio.");
+		}
 	}
 }
