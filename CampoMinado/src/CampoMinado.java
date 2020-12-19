@@ -20,18 +20,20 @@ public class CampoMinado {
 	private ArrayList<String> historicos;
 	private long inicioCronometro;
 	private String dificuldadeSelecionada;
+	private Scanner teclado;
 	
 	public CampoMinado() {
 		vetorPosicoesParaVerificar = new ArrayList();
 		historicos = new ArrayList();
 		qtdCamposAbertos = 0;
+		teclado = new Scanner(System.in);
 	}
 
 	public void iniciaPartida(int dificuldade) {
 		switch (dificuldade) {
 			case 1: {
-				listaBombas = new char[10][8];
-				tela = new char[10][8];
+				listaBombas = new char[5][5];
+				tela = new char[5][5];
 				dificuldadeSelecionada = "Nível Fácil  "; 
 				break;
 			}
@@ -60,38 +62,7 @@ public class CampoMinado {
 
 	private void MostraCampo() {
 		do {
-			for (int qtdLinha = 0; qtdLinha < 2; ++qtdLinha) {
-				System.out.print("    ");
-				for (int idx = 0; idx < tela[0].length; ++idx) {
-					if (qtdLinha == 0) {
-						System.out.print(idx + " ");
-					
-						if (idx < 9)
-							System.out.print(" ");
-						} else {
-							System.out.print("---");
-						}
-				}
-			
-				System.out.println();
-			}
-		
-			for (int idxLinha = 0; idxLinha < tela.length; ++idxLinha) {
-				for (int idxColuna = 0; idxColuna < tela[idxLinha].length; ++idxColuna) {
-					if (idxColuna == 0) {
-						System.out.print(idxLinha);
-					
-						if (idxLinha < 10)
-							System.out.print(" ");
-					
-						System.out.print("| ");
-					}
-					
-					System.out.print(tela[idxLinha][idxColuna] + "  ");
-				}
-			
-				System.out.println();
-			}
+			MostraTela();
 			
 			try {
 				InformaCampo();
@@ -100,9 +71,44 @@ public class CampoMinado {
 			}
 		} while (!terminouJogo);
 	}
+	
+	private void MostraTela() {
+		for (int qtdLinha = 0; qtdLinha < 2; ++qtdLinha) {
+			System.out.print("    ");
+			for (int idx = 0; idx < tela[0].length; ++idx) {
+				if (qtdLinha == 0) {
+					System.out.print(idx + " ");
+				
+					if (idx < 9)
+						System.out.print(" ");
+					} else {
+						System.out.print("---");
+					}
+			}
+		
+			System.out.println();
+		}
+	
+		for (int idxLinha = 0; idxLinha < tela.length; ++idxLinha) {
+			for (int idxColuna = 0; idxColuna < tela[idxLinha].length; ++idxColuna) {
+				if (idxColuna == 0) {
+					System.out.print(idxLinha);
+				
+					if (idxLinha < 10)
+						System.out.print(" ");
+				
+					System.out.print("| ");
+				}
+				
+				System.out.print(tela[idxLinha][idxColuna] + "  ");
+			}
+		
+			System.out.println();
+		}
+	}
 
 	private void InformaCampo() {
-		Scanner teclado = new Scanner(System.in);
+		
 		int linha = -1;
 		int coluna = -1;
 		
@@ -119,16 +125,22 @@ public class CampoMinado {
 		if (ValidaCampos(linha, coluna)) {
 			switch (AbrirCampo(linha, coluna, 'U')) {
 				case 'D':{
+					MostraTela();
 					System.out.println("Você perdeu!");
 					historicos.add(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) 
 							+ " | " + dificuldadeSelecionada + " | " + "Duração " + CalculaTempoJogo() + " | " + "Perdeu");
+					
+					MostraOpcoes();
 					break;
 				}
 			
 				case 'V': {
+					MostraTela();
 					System.out.println("Você ganhou!");
 					historicos.add(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) 
 							+ " | " + dificuldadeSelecionada + " | " + "Duração " + CalculaTempoJogo() + " | " + "Ganhou");
+					
+					MostraOpcoes();
 					break;
 				}
 			
@@ -136,6 +148,17 @@ public class CampoMinado {
 		}
 	}
 	
+	private void MostraOpcoes() {
+		int opcao = 0;
+		
+		System.out.println("\n1 - Voltar para o menu principal");
+		System.out.println("0 - Sair");
+		opcao = teclado.nextInt();
+		
+		if (opcao == 0)
+			System.exit(0);
+	}
+
 	private boolean ValidaCampos(int linha, int coluna) {
 		if (tela[linha][coluna] != '#') {
 			System.out.println("Posição já foi aberta!");
@@ -150,6 +173,7 @@ public class CampoMinado {
 		if (metodo == 'U' && listaBombas[linha][coluna] == '*') {
 			terminouJogo = true;
 			VerificaArredores(linha, coluna, 'D');
+			AbreTudo();
 			return 'D';
 		}
 
@@ -164,12 +188,26 @@ public class CampoMinado {
 
 		if (ContaCamposNaoInformados() == qtdBombas) {
 			terminouJogo = true;
+			AbreTudo();
 			return 'V';
 		}
 		
 		return ' ';
 	}
 	
+	private void AbreTudo() {
+		for (int idxLinha = 0; idxLinha < tela.length; ++idxLinha) {
+			for (int idxColuna = 0; idxColuna < tela[idxLinha].length; ++idxColuna) {
+				if (listaBombas[idxLinha][idxColuna] == '*')
+					tela[idxLinha][idxColuna] = '*';
+				else if (tela[idxLinha][idxColuna] == '#')
+					tela[idxLinha][idxColuna] = VerificaArredores(idxLinha, idxColuna, 'D');
+					
+			}
+		}
+		
+	}
+
 	private int ContaCamposNaoInformados()	{
 		int qtdCamposNaoInformados = 0;
 		
@@ -186,6 +224,7 @@ public class CampoMinado {
 	private char VerificaArredores(int linha, int coluna, char metodo) {
 		int qtdBombasEncontradas = 0;
 		ArrayList<int[]> posicoesParaVerificar = new ArrayList();
+		
 		if (linha != 0) {
 			int linhaVerificacao = linha - 1;
 			
@@ -270,8 +309,9 @@ public class CampoMinado {
 			//   0
 		}
 		
-		if (qtdBombasEncontradas == 0) 
+		if (qtdBombasEncontradas == 0 && metodo != 'D') 
 			vetorPosicoesParaVerificar.addAll(posicoesParaVerificar);
+		
 		if (metodo == 'C')
 			vetorPosicoesParaVerificar.remove(0);
 		
@@ -289,7 +329,7 @@ public class CampoMinado {
 		qtdBombas = 0;
 		switch (dificuldade) {
 			case 1: {
-				qtdBombas = 10;
+				qtdBombas = 1;
 				break;
 			}
 	
