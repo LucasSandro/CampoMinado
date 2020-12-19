@@ -20,13 +20,11 @@ public class CampoMinado {
 	private ArrayList<String> historicos;
 	private long inicioCronometro;
 	private String dificuldadeSelecionada;
-	private Scanner teclado;
 	
 	public CampoMinado() {
 		vetorPosicoesParaVerificar = new ArrayList();
 		historicos = new ArrayList();
 		qtdCamposAbertos = 0;
-		teclado = new Scanner(System.in);
 	}
 
 	public void iniciaPartida(int dificuldade) {
@@ -108,7 +106,7 @@ public class CampoMinado {
 	}
 
 	private void InformaCampo() {
-		
+		Scanner teclado = new Scanner(System.in);
 		int linha = -1;
 		int coluna = -1;
 		
@@ -149,6 +147,7 @@ public class CampoMinado {
 	}
 	
 	private void MostraOpcoes() {
+		Scanner teclado = new Scanner(System.in);
 		int opcao = 0;
 		
 		System.out.println("\n1 - Voltar para o menu principal");
