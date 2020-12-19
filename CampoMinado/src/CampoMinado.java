@@ -32,8 +32,8 @@ public class CampoMinado {
 	public void iniciaPartida(int dificuldade) {
 		switch (dificuldade) {
 			case 1: {
-				listaBombas = new char[5][5];
-				tela = new char[5][5];
+				listaBombas = new char[10][8];
+				tela = new char[10][8];
 				dificuldadeSelecionada = "Nível Fácil  "; 
 				break;
 			}
@@ -329,7 +329,7 @@ public class CampoMinado {
 		qtdBombas = 0;
 		switch (dificuldade) {
 			case 1: {
-				qtdBombas = 1;
+				qtdBombas = 10;
 				break;
 			}
 	
