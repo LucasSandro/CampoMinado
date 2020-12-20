@@ -286,8 +286,6 @@ public class CampoMinado {
 			}
 			
 			//Acima
-			// 0 0 0
-			//	 #
 		}
 		
 		if (linha < tela.length - 1) {
@@ -310,8 +308,6 @@ public class CampoMinado {
 				}
 			}
 			//Abaixo
-			//  #
-			//0 0 0
 		}
 		
 		if (coluna != 0) {
@@ -327,9 +323,6 @@ public class CampoMinado {
 			}
 			
 			//Ao lado <-
-			//0
-			//0 #
-			//0
 		}
 		
 		if (coluna < tela[0].length - 1) {
@@ -344,9 +337,6 @@ public class CampoMinado {
 				posicoesParaVerificar.get(posicoesParaVerificar.size() - 1)[1] = colunaVerificacao;
 			}
 			//Ao lado ->
-			//   0
-			// # 0
-			//   0
 		}
 		
 		if (qtdBombasEncontradas == 0 && metodo != 'D') 
@@ -383,7 +373,7 @@ public class CampoMinado {
 	}
 
 	public void mostraCredito() {
-		System.out.println("Desenvolvido por Lucas Sandro e Vinicius");
+		System.out.println("\nDesenvolvido por Lucas Sandro e Vinicius");
 	}
 
 	public void limpaHistorico() {
@@ -395,7 +385,6 @@ public class CampoMinado {
 		
 		System.out.println("");
 		try {
-			//FileReader file = new FileReader(System.getProperty("user.home") + "/Área de Trabalho" + "/arquivo.txt");
 			FileReader file = new FileReader(javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory() + "/arquivo.txt");
 			BufferedReader reader = new BufferedReader(file);
 			
